@@ -1,0 +1,23 @@
+{
+  "name": "mini-scheduler",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.23",
+    "@types/lodash": "^4.14.170",
+    "@types/scheduler": "^0.16.1",
+    "jest": "^27.0.6",
+    "ts-jest": "^27.0.3",
+    "typescript": "^4.3.4",
+    "vite": "^2.3.8"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "scheduler": "^0.20.2"
+  }
+}
