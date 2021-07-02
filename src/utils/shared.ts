@@ -14,7 +14,7 @@ export const getAsyncFunc = (type?: AsyncFuncType): FuncType => {
       break;
     default:
       throw new Error(
-        "currently only support 'setTimeout' | 'promise' | 'requestAnimationFrame' types"
+        "currently only support 'setTimeout' | 'requestAnimationFrame' types"
       );
   }
   return func;
