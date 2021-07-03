@@ -1,8 +1,8 @@
-import { createTimeSlicing } from '@/time-slicing';
+import { createTimeSlicing } from "@/time-slicing/time-slicing";
 
-const button = document.querySelector('#button') as HTMLButtonElement;
+const button = document.querySelector("#button") as HTMLButtonElement;
 
-document.addEventListener('mousemove', ({ pageX, pageY }) => {
+document.addEventListener("mousemove", ({ pageX, pageY }) => {
   if (!button) return;
   button.style.top = `${pageY}px`;
   button.style.left = `${pageX}px`;
@@ -14,11 +14,11 @@ function* longTask() {
   while (performance.now() < start + 3000) {
     yield ++count;
   }
-  console.log('long task done');
+  console.log("long task done");
   return 1;
 }
 
-const timeSlicedLongTask = createTimeSlicing(longTask, 'setTimeout');
+const timeSlicedLongTask = createTimeSlicing(longTask, "setTimeout");
 timeSlicedLongTask();
 
 // function longTask() {

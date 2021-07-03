@@ -1,15 +1,15 @@
-import { threshold, renderTime } from '@/constants';
-import type { AsyncFuncType, ClearTimerFuncType, FuncType } from '@/types';
+import { threshold, renderTime } from "@/constants/index";
+import type { AsyncFuncType, ClearTimerFuncType, FuncType } from "@/types";
 
 export const noop = () => {};
 
 export const getAsyncFunc = (type?: AsyncFuncType): FuncType => {
   let func: FuncType;
   switch (type) {
-    case 'setTimeout':
+    case "setTimeout":
       func = window.setTimeout;
       break;
-    case 'requestAnimationFrame':
+    case "requestAnimationFrame":
       func = window.requestAnimationFrame;
       break;
     default:
