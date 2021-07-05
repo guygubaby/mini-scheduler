@@ -1,15 +1,14 @@
-import { threshold, renderTime } from "@/constants/index";
-import type { AsyncFuncType, ClearTimerFuncType, FuncType } from "@/types";
+import type { AsyncFuncType, ClearTimerFuncType, FuncType } from '@/types';
 
 export const noop = () => {};
 
 export const getAsyncFunc = (type?: AsyncFuncType): FuncType => {
   let func: FuncType;
   switch (type) {
-    case "setTimeout":
+    case 'setTimeout':
       func = window.setTimeout;
       break;
-    case "requestAnimationFrame":
+    case 'requestAnimationFrame':
       func = window.requestAnimationFrame;
       break;
     default:
@@ -22,13 +21,6 @@ export const getAsyncFunc = (type?: AsyncFuncType): FuncType => {
 
 export const getTime = () => performance.now();
 
-export const shouldYield = (startTime: number): boolean => {
-  return (
-    (navigator as any)?.scheduling?.isInputPending() ||
-    getTime() < startTime + threshold - renderTime
-  );
-};
-
 export const clearTimers = (
   timerQueue: number[],
   clearTimerFunc: ClearTimerFuncType
@@ -39,4 +31,12 @@ export const clearTimers = (
     clearTimerFunc(_timer);
     _timer = timerQueue.pop();
   }
+};
+
+const p = Promise.resolve();
+
+export const nextTick = (fn: () => void) => p.then(fn);
+
+export const isGenerator = (target: any): boolean => {
+  return target.toString().includes('Generator');
 };
