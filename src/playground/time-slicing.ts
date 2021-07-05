@@ -1,32 +1,31 @@
-import { createTimeSlicing } from "@/time-slicing/time-slicing";
+import { ts, tsGenerator } from '@/time-slicing';
 
-const button = document.querySelector("#button") as HTMLButtonElement;
+const button = document.querySelector('#button') as HTMLButtonElement;
 
-document.addEventListener("mousemove", ({ pageX, pageY }) => {
+document.addEventListener('mousemove', ({ pageX, pageY }) => {
   if (!button) return;
   button.style.top = `${pageY}px`;
   button.style.left = `${pageX}px`;
 });
 
-function* longTask() {
+const longTask = () => {
   const start = performance.now();
-  let count: number = 1;
-  while (performance.now() < start + 3000) {
-    yield ++count;
+  while (performance.now() < start + 30) {}
+  console.log('long task done');
+};
+
+function* longTaskGenerator() {
+  const start = performance.now();
+  while (performance.now() < start + 300) {
+    yield;
   }
-  console.log("long task done");
-  return 1;
+  console.log('long task done');
 }
 
-const timeSlicedLongTask = createTimeSlicing(longTask, "setTimeout");
-timeSlicedLongTask();
+const arr = Array.from({ length: 5 }, (_, index) => index);
 
-// function longTask() {
-//   const start = performance.now();
-//   let count: number = 1;
-//   while (performance.now() < start + 3000) {}
-//   console.log('long task done');
-//   return 1;
-// }
-
-// longTask();
+window.setTimeout(() => {
+  tsGenerator(longTaskGenerator(), 60);
+  // ts(arr, longTaskGenerator, 30);
+  // ts(arr, longTask, 30);
+}, 2000);
