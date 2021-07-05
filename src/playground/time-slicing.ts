@@ -25,7 +25,10 @@ function* longTaskGenerator() {
 const arr = Array.from({ length: 5 }, (_, index) => index);
 
 window.setTimeout(() => {
-  tsGenerator(longTaskGenerator(), 60);
+  tsGenerator(longTaskGenerator(), {
+    fps: 60,
+    funcType: 'requestAnimationFrame',
+  });
   // ts(arr, longTaskGenerator, 30);
   // ts(arr, longTask, 30);
 }, 2000);

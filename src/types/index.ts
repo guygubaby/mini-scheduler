@@ -23,4 +23,4 @@ export type ClearTimerFuncType =
   | typeof window.clearTimeout
   | typeof window.cancelAnimationFrame;
 
-export type AsyncFuncType = 'setTimeout' | 'promise' | 'requestAnimationFrame';
+export type AsyncFuncType = 'setTimeout' | 'requestAnimationFrame';

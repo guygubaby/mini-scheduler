@@ -1,7 +1,5 @@
 import type { AsyncFuncType, ClearTimerFuncType, FuncType } from '@/types';
 
-export const noop = () => {};
-
 export const getAsyncFunc = (type?: AsyncFuncType): FuncType => {
   let func: FuncType;
   switch (type) {
@@ -25,7 +23,6 @@ export const clearTimers = (
   timerQueue: number[],
   clearTimerFunc: ClearTimerFuncType
 ): void => {
-  console.log(timerQueue.length);
   let _timer = timerQueue.pop();
   while (timerQueue.length && _timer) {
     clearTimerFunc(_timer);

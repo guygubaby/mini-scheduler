@@ -1,10 +1,14 @@
-import { getTime, isGenerator, nextTick } from '@/utils/shared';
+import { AsyncFuncType, FuncType } from '@/types';
+import { clearTimers, getTime, isGenerator, nextTick } from '@/utils/shared';
 
 const queue: Array<Function> = [];
 let queued = false;
 
 let fps: number = 60;
 let renderTime: number = 10;
+let triggerFunc: FuncType = window.setTimeout;
+
+const timerQueue: number[] = [];
 
 const shouldYield = (startTime: number): boolean => {
   return (
@@ -13,19 +17,25 @@ const shouldYield = (startTime: number): boolean => {
   );
 };
 
-const stepFunc = (
-  generator: Generator,
-  triggerFunc: typeof window.setTimeout = window.setTimeout
-) => {
+const stepFunc = (generator: Generator) => {
   const step = () => {
     const start = getTime();
     let temp: null | IteratorResult<any, any> = null;
     do {
       temp = generator.next();
     } while (!temp.done && shouldYield(start));
-    if (temp.done) return;
 
-    triggerFunc(step);
+    if (temp.done) {
+      const clearTimerFunc =
+        triggerFunc === window.setTimeout
+          ? window.clearTimeout
+          : window.cancelAnimationFrame;
+      clearTimers(timerQueue, clearTimerFunc);
+      return;
+    }
+
+    const timerId = triggerFunc(step);
+    timerQueue.push(timerId);
   };
 
   return step;
@@ -37,8 +47,8 @@ function* flushJobs() {
     const res = func();
 
     if (isGenerator(res)) {
-      const triggerFunc = window.setTimeout;
-      triggerFunc(stepFunc(res as Generator, triggerFunc));
+      const timerId = triggerFunc(stepFunc(res as Generator));
+      timerQueue.push(timerId);
     } else {
       yield res;
     }
@@ -49,7 +59,6 @@ function* flushJobs() {
 
 const queueFlushJobs = () => {
   const generator = flushJobs();
-  const triggerFunc = window.setTimeout;
 
   return function next() {
     const start = getTime();
@@ -59,9 +68,16 @@ const queueFlushJobs = () => {
     } while (!res.done && shouldYield(start));
 
     if (res.done) {
+      const clearTimerFunc =
+        triggerFunc === window.setTimeout
+          ? window.clearTimeout
+          : window.cancelAnimationFrame;
+      clearTimers(timerQueue, clearTimerFunc);
       return;
     }
-    triggerFunc(next);
+
+    const timerId = triggerFunc(next);
+    timerQueue.push(timerId);
   };
 };
 
@@ -73,7 +89,12 @@ const queueJob = (job: Function) => {
   }
 };
 
-const judgeFpsAndRenderTime = (fps: number, renderTime: number) => {
+const judgeConfig = (config: TimeSlicingConfig) => {
+  const {
+    fps: _fps = 60,
+    renderTime: _renderTime = 10,
+    funcType: _funcType = 'setTimeout',
+  } = config;
   if (fps <= 0 || fps > 120) {
     throw new Error(`fps must between 0~120, instead of ${fps}`);
   }
@@ -82,17 +103,35 @@ const judgeFpsAndRenderTime = (fps: number, renderTime: number) => {
       `fps must between 0~${Math.floor(1000 / 60)}, instead of ${renderTime} ms`
     );
   }
-  fps = fps;
-  renderTime = renderTime;
+  if (!['setTimeout', 'requestAnimationFrame'].includes(_funcType)) {
+    throw new TypeError(
+      'funcType must be window.setTimeout or window.requestAnimationFrame'
+    );
+  }
+  fps = _fps;
+  renderTime = _renderTime;
+  triggerFunc =
+    _funcType === 'setTimeout'
+      ? window.setTimeout
+      : window.requestAnimationFrame;
 };
+
+export interface TimeSlicingConfig {
+  fps?: number;
+  renderTime?: number;
+  funcType?: AsyncFuncType;
+}
 
 export const ts = <T, U>(
   arr: T[],
   func: (item: T, index: number, arr: T[]) => U,
-  fps: number = 60,
-  renderTime: number = 10
+  config: TimeSlicingConfig = {
+    fps: 60,
+    renderTime: 10,
+    funcType: 'setTimeout',
+  }
 ) => {
-  judgeFpsAndRenderTime(fps, renderTime);
+  judgeConfig(config);
 
   for (let i = 0; i < arr.length; i++) {
     queueJob(() => func(arr[i], i, arr));
@@ -101,15 +140,18 @@ export const ts = <T, U>(
 
 export const tsGenerator = <T, U>(
   func: Generator<T, any, U>,
-  fps: number = 60,
-  renderTime: number = 10
+  config: TimeSlicingConfig = {
+    fps: 60,
+    renderTime: 10,
+    funcType: 'setTimeout',
+  }
 ) => {
   if (!isGenerator(func)) {
     throw new TypeError('payload func must be a generator ');
   }
 
-  judgeFpsAndRenderTime(fps, renderTime);
+  judgeConfig(config);
 
-  const triggerFunc = window.setTimeout;
-  triggerFunc(stepFunc(func, triggerFunc));
+  const timerId = triggerFunc(stepFunc(func));
+  timerQueue.push(timerId);
 };
