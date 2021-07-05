@@ -10,8 +10,6 @@ document.addEventListener('mousemove', ({ pageX, pageY }) => {
   fly.style.left = `${pageX - 20}px`;
 });
 
-const arr = Array.from({ length: 20 }, (_, i) => i);
-
 const timeSlicingConfig: TimeSlicingConfig = {
   fps: 60,
   renderTime: 10,
