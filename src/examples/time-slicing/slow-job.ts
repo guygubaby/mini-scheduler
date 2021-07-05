@@ -1,6 +1,6 @@
 // if there's job is slow, use another generator time slicing
 
-import { TimeSlicingConfig, tsGenerator } from '@/time-slicing';
+import { TimeSlicingConfig, tsGenerator } from '../../index';
 
 const fly = document.querySelector('#fly') as HTMLButtonElement;
 
