@@ -35,5 +35,6 @@ const p = Promise.resolve();
 export const nextTick = (fn: () => void) => p.then(fn);
 
 export const isGenerator = (target: any): boolean => {
+  if (!target) return false;
   return target.toString().includes('Generator');
 };

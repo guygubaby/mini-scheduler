@@ -1,6 +1,6 @@
-import { asyncPool } from '../concurrent/async-pool';
+import { asyncPool } from '../../index';
 
-const arr = [1, 2, 3, 4];
+const arr = Array.from({ length: 20 }, (_, i) => i);
 
 const task = <T>(item: T) => {
   return new Promise((resolve) => {
