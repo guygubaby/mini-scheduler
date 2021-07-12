@@ -5,9 +5,11 @@ A mini scheduler for task handler in browser
 ## Why scheduler
 
 ### 1. Concurrent
+
 Concurrency behavior make your code run faster
 
 ### 2. Time Slicing
+
 1. before
 ![before-time-slicing](https://camo.githubusercontent.com/504c9313eea563f764baa07e55ea5ba484123e85e2f6635608415fc18eefb8ad/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6d656469612d702e736c69642e65732f75706c6f6164732f3734333730322f696d616765732f353631363434342f6c6f6e672d7461736b2e706e67)
 
