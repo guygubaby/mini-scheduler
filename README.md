@@ -5,7 +5,7 @@ A mini scheduler for task handler in browser
 ## Install
 
 ```bash
-# coming soon ~
+yarn add mini-scheduler
 ```
 
 ## Features
